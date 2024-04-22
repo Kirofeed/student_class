@@ -23,7 +23,7 @@ class SStudData
 public:
     // конструкторы,
     SStudData(string Name, int ID, vector<SMark> Marks) : Name(Name), ID(ID), Marks(Marks) {}
-    SStudData(SStudData& stud) : Name(stud.Name), ID(stud.ID), Marks(stud.Marks) {}
+    // SStudData(SStudData& stud) : Name(stud.Name), ID(stud.ID), Marks(stud.Marks) {}
     // SStudData(SStudData&& stud) : Name(std::move(stud.Name)), ID(stud.ID), Marks(std::move(stud.Marks)) {}
     // перегрузка =
     SStudData& operator=(SStudData& stud) {
@@ -35,8 +35,11 @@ public:
     friend ostream& operator<<(ostream& os, SStudData& stud);
     
     // get-методы,
-    const string& getName() {
+    const string& getName() const {
         return Name;
+    }
+    const int getID() const {
+        return ID;
     }
     // метод для добавления оценки
     void addMark(const string& subject, int mark) {
@@ -55,8 +58,8 @@ ostream& operator<<(ostream& os, SStudData& stud) {
     return os;
 }
 
-vector<SStudData> GetDataFromFile(const string& adr) {
-    ifstream in(adr);
+vector<SStudData> GetDataFromFile() {
+    ifstream in("input.txt");
     if (!in.is_open()) 
     {
         throw "can't open file";
@@ -68,43 +71,50 @@ vector<SStudData> GetDataFromFile(const string& adr) {
         string name;
         bool is_name = false;
         int id;
-        bool is_id;
+        bool is_id = false;
         vector <SMark> Marks;
-        size_t pos = line.find(";");
+        size_t pos = 0;
         while (pos != line.size())
         {
-            if (!is_name)
-            {
-                name = line.substr(0, pos);
-                line.erase(0, pos + 1);
-                is_name = true;
-                continue;
-            }
-            else if (!is_id) {
-                id = stoi(line.substr(0, pos));
-                line.erase(0, pos + 1);
-                is_id = true;
-                continue;
-            }
-            else {
-                string subj_mark = line.substr(0, pos);
-                line.erase(0, pos + 1);
+            pos = line.find(";");
+            if (pos > line.size()) {
+                string subj_mark = line.substr(0, line.size());
                 size_t pos_ = subj_mark.find("-");
-                string subj = subj_mark.substr(0, pos_ + 1);
-                subj_mark.erase(0, pos_);
+                string subj = subj_mark.substr(0, pos_);
+                subj_mark.erase(0, pos_ + 1);
                 int mark = stoi(subj_mark);
                 Marks.push_back(SMark(subj, mark));
+                SStudData stud(name, id, Marks);
+                Marks.clear();
+                students.push_back(stud);
+                break;
             }
-            string subj_mark = line.substr(0, line.size());
-            size_t pos_ = subj_mark.find("-");
-            string subj = subj_mark.substr(0, pos_ + 1);
-            subj_mark.erase(0, pos_);
-            int mark = stoi(subj_mark);
-            Marks.push_back(SMark(subj, mark));
+            else {
+                if (!is_name)
+                {
+                    name = line.substr(0, pos);
+                    line.erase(0, pos + 1);
+                    is_name = true;
+                    continue;
+                }
+                else if (!is_id) {
+                    id = stoi(line.substr(0, pos));
+                    line.erase(0, pos + 1);
+                    is_id = true;
+                    continue;
+                }
+                else {
+                    string subj_mark = line.substr(0, pos);
+                    line.erase(0, pos + 1);
+                    size_t pos_ = subj_mark.find("-");
+                    string subj = subj_mark.substr(0, pos_);
+                    subj_mark.erase(0, pos_ + 1);
+                    int mark = stoi(subj_mark);
+                    Marks.push_back(SMark(subj, mark));
+                }
+            }
         }
-        SStudData stud(name, id, Marks);
-        Marks.clear();
-        students.push_back(stud);
+        
     }
     return students;
 }
@@ -137,10 +147,35 @@ vector<SStudData> GetDataFromFile(const string& adr) {
 //     return lastNameA < lastNameB;
 // }
 
+bool sort_stud(const SStudData& student1, const SStudData& student2) {
+    if (student1.getName() < student2.getName())
+    {
+        return true;
+    }
+    else if(student1.getName() == student2.getName()) {
+        if (student1.getID() < student2.getID()) 
+        {
+            return true;
+        }
+        else {
+            return false;
+        }        
+    }
+    else {
+        return false;
+    }
+}
+
+
 int main() {
 
-    auto vec = GetDataFromFile("input.txt");
+    auto vec = GetDataFromFile();
 
+    for (auto i : vec) {
+        cout << i << endl;
+    }
+    sort(vec.begin(), vec.end(), sort_stud);
+    cout << endl << endl << endl;
     for (auto i : vec) {
         cout << i << endl;
     }
