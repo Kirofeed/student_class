@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/kirilldrozhzha/proga/stud/build",
+  "command": "/usr/bin/clang++ -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk -o CMakeFiles/stud.dir/main.cpp.o -c /Users/kirilldrozhzha/proga/stud/main.cpp",
+  "file": "/Users/kirilldrozhzha/proga/stud/main.cpp",
+  "output": "CMakeFiles/stud.dir/main.cpp.o"
+}
+]
